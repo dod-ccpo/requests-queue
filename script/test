@@ -6,5 +6,11 @@ set -e
 # Ensure we are in the app root directory (not the /script directory)
 cd "$(dirname "${0}")/.."
 
-# Run unit tests
-pipenv run python -m pytest
+TEST_CMD="pipenv run python -m pytest"
+
+if [ "$1" = "watch" ]; then
+  ag -l -G [py$] | entr pipenv run python -m pytest
+else
+  pylint .
+  pipenv run python -m pytest
+fi
