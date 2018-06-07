@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+tornado = "*"
+webassets = "==0.12.1"
+Unipath = "==1.1"
+pendulum = "*"
+redis = "*"
+
+[dev-packages]
+pytest = "==3.6.0"
+pytest-tornado = "==0.5.0"
+pylint = "*"
+ipython = "*"
+ipdb = "*"
+
+[requires]
+python_version = "3.6"
