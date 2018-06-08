@@ -27,3 +27,16 @@ To run unit tests:
 or
 
     python -m pytest
+
+## Configuration
+
+The file config/dev.ini can contain a config file that will be
+read during testing.  If `FLASK_ENV` is set to something other
+than "dev", the `$FLASK_ENV.ini` will be used.  Here is a sample
+config file:
+
+    [default]
+    DEBUG=true
+    AUTORELOAD=true
+    REDIS_URL=redis://localhost:6379
+    PORT=8889
