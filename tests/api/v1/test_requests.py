@@ -3,7 +3,7 @@ from json import dumps, loads
 import pendulum
 
 
-sample_request = {
+sample_request_body = {
     'details_of_use': {
         'application_details': {
             'application_name': 'Death Star VM',
@@ -68,11 +68,19 @@ sample_request = {
     }
 }
 
+sample_post_body = {
+    'creator_id': 'e59a9d20-c31e-47f5-a9ae-d791ad8fffa4',
+    'request': sample_request_body,
+}
+
 
 @pytest.mark.gen_test
 def test_create_request(http_client, base_url):
     response = yield http_client.fetch(
         base_url + '/requests',
         method='POST',
-        body=dumps(sample_request))
+        headers={'Content-Type': 'application/json'},
+        body=dumps(sample_post_body))
     assert response.code == 200
+    json_response = loads(response.body)
+    assert json_response['creator'] == sample_post_body['creator_id']

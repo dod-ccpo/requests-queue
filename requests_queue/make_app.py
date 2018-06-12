@@ -10,13 +10,12 @@ from requests_queue.handlers.main import MainHandler
 
 
 def make_app(config):
-    redis = make_redis(config)
-    db = make_db(config)
+    db_session = make_db(config)
 
     app = tornado.web.Application([
             url( r'/', MainHandler),
-            url(r'/requests', RequestHandler, {'redis': redis}),
-            url(r'/requests/(.*)', RequestHandler, {'redis': redis}),
+            url(r'/requests', RequestHandler, {'db_session': db_session}),
+            url(r'/requests/(.*)', RequestHandler, {'db_session': db_session}),
         ],
         debug=config['default'].getboolean('DEBUG'),
     )

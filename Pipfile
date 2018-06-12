@@ -12,6 +12,7 @@ redis = "*"
 sqlalchemy = "*"
 alembic = "*"
 "psycopg2-binary" = "*"
+marshmallow-sqlalchemy = "*"
 
 [dev-packages]
 pytest = "==3.6.0"
