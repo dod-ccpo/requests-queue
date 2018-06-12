@@ -13,7 +13,6 @@ class RequestHandler(RequestHandler):
     def get(self, request_id):
         return self.write({})
 
-
     def post(self):
         body = parse_body(self.request)
-        return self.write(body)
+
