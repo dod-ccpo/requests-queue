@@ -87,10 +87,64 @@ def test_create_request(http_client, base_url):
 
 
 @pytest.mark.gen_test
+def test_update_request(http_client, base_url):
+    sample_request = {
+        'creator_id': 'bf53276a-29e0-476c-b820-b313ec19ec7f',
+        'request': {
+            'red': {
+                'a': 1,
+                'b': 2,
+                'c': 3
+            },
+            'green': [1, 2, 3],
+            'blue': 3
+        }
+    }
+    response = yield http_client.fetch(
+        base_url + '/requests',
+        method='POST',
+        headers={'Content-Type': 'application/json'},
+        body=dumps(sample_request))
+    request_id = loads(response.body)['id']
+
+    request_delta = {
+        'red': {'b': 20}
+    }
+
+    response = yield http_client.fetch(
+        base_url + '/requests/{}'.format(request_id),
+        method='PATCH',
+        headers={'Content-Type': 'application/json'},
+        body=dumps(request_delta)
+    )
+    request_json = loads(response.body)
+    assert request_json['body'] == {
+        'red': {
+            'a': 1,
+            'b': 20,
+            'c': 3
+        },
+        'green': [1, 2, 3],
+        'blue': 3
+    }
+
+@pytest.mark.gen_test
+def test_update_nonexistent_request(http_client, base_url):
+    response = yield http_client.fetch(
+        base_url + '/requests/{}'.format('bf53276a-29e0-476c-b820-b313ec19ec7d'),
+        method='PATCH',
+        headers={'Content-Type': 'application/json'},
+        body=dumps({'a': 'b'}),
+        raise_error=False)
+    assert response.code == 404
+
+
+@pytest.mark.gen_test
 def test_get_requests(http_client, base_url):
     response = yield http_client.fetch(
         base_url + '/requests',
+        method='GET',
         headers={'Content-Type': 'application/json'})
     assert response.code == 200
-    json_response = loads(response.body)
-    assert 'requests' in json_response
+    response_json = loads(response.body)
+    assert 'requests' in response_json
