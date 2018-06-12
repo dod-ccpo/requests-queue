@@ -15,7 +15,6 @@ def make_app(config):
     app = tornado.web.Application([
             url( r'/', MainHandler),
             url(r'/requests', RequestHandler, {'db_session': db_session}),
-            url(r'/requests/(.*)', RequestHandler, {'db_session': db_session}),
         ],
         debug=config['default'].getboolean('DEBUG'),
     )

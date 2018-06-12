@@ -13,8 +13,10 @@ class RequestHandler(RequestHandler):
     def initialize(self, db_session):
         self.db_session = db_session
 
-    def get(self, request_id):
-        return self.write({})
+    def get(self):
+        requests = self.db_session.query(Request).all()
+        serialized_requests = RequestSerializer().dump(requests, many=True).data
+        self.write({'requests': serialized_requests})
 
     def post(self):
         json = parse_body(self.request)

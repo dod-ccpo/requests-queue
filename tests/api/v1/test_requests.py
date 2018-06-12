@@ -84,3 +84,13 @@ def test_create_request(http_client, base_url):
     assert response.code == 200
     json_response = loads(response.body)
     assert json_response['creator'] == sample_post_body['creator_id']
+
+
+@pytest.mark.gen_test
+def test_get_requests(http_client, base_url):
+    response = yield http_client.fetch(
+        base_url + '/requests',
+        headers={'Content-Type': 'application/json'})
+    assert response.code == 200
+    json_response = loads(response.body)
+    assert 'requests' in json_response
