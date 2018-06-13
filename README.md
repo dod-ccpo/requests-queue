@@ -18,6 +18,7 @@ The app assumes that you have a local postgres 9.4+ instance running on the defa
 
 ```
 createuser -s atat
+createdb atat
 psql -c 'create database requests_queue;' -U atat
 pipenv run alembic upgrade head
 ```
