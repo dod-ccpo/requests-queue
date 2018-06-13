@@ -81,9 +81,8 @@ def test_create_request(http_client, base_url):
         method='POST',
         headers={'Content-Type': 'application/json'},
         body=dumps(sample_post_body))
-    assert response.code == 200
-    json_response = loads(response.body)
-    assert json_response['creator'] == sample_post_body['creator_id']
+    assert response.code == 202
+    assert 'id' in loads(response.body)
 
 
 @pytest.mark.gen_test
@@ -117,16 +116,7 @@ def test_update_request(http_client, base_url):
         headers={'Content-Type': 'application/json'},
         body=dumps(request_delta)
     )
-    request_json = loads(response.body)
-    assert request_json['body'] == {
-        'red': {
-            'a': 1,
-            'b': 20,
-            'c': 3
-        },
-        'green': [1, 2, 3],
-        'blue': 3
-    }
+    assert response.code == 202
 
 @pytest.mark.gen_test
 def test_update_nonexistent_request(http_client, base_url):

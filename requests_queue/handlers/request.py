@@ -61,11 +61,14 @@ class RequestHandler(RequestHandler):
 
         self.db_session.commit()
 
-        self.write(RequestSerializer().dump(request).data)
+        self.set_status(202)
+
 
     def post(self):
         json = parse_body(self.request)
         request = Request(creator=json['creator_id'], body=json['request'])
         self.db_session.add(request)
         self.db_session.commit()
+
+        self.set_status(202)
         self.write(RequestSerializer().dump(request).data)
