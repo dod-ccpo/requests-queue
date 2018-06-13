@@ -17,7 +17,9 @@ fileConfig(config.config_file_name)
 
 # Add root project dir to the python path
 import sys
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+from unipath import Path
+
+parent_dir = Path(__file__).parent.parent
 sys.path.append(parent_dir)
 
 from requests_queue.make_app import make_config
