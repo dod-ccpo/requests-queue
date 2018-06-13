@@ -11,7 +11,7 @@ def parse_body(request):
     return loads(request.body.decode('utf-8'))
 
 
-def deep_merge(source: dict, destination: dict):
+def deep_merge(source, destination: dict):
     """
     Merge source dict into destination dict recursively.
     """
@@ -55,8 +55,8 @@ class RequestHandler(RequestHandler):
 
         request.body = deep_merge(json, request.body)
 
-        # Without this, sqlalchemy won't notice the change to request.body
-        # and won't update the database.
+        # Without this, sqlalchemy won't notice the change to request.body,
+        # since it doesn't track dictionary mutations by default.
         flag_modified(request, 'body')
 
         self.db_session.commit()
