@@ -9,6 +9,10 @@ webassets = "==0.12.1"
 Unipath = "==1.1"
 pendulum = "*"
 redis = "*"
+sqlalchemy = "*"
+alembic = "*"
+"psycopg2-binary" = "*"
+marshmallow-sqlalchemy = "*"
 
 [dev-packages]
 pytest = "==3.6.0"

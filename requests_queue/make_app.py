@@ -4,20 +4,20 @@ from tornado.web import url
 from configparser import ConfigParser
 
 from requests_queue.redis import make_redis
+from requests_queue.database import make_db
 from requests_queue.handlers.request import RequestHandler
 from requests_queue.handlers.main import MainHandler
 
 
 def make_app(config):
-    redis = make_redis(config)
+    db_session = make_db(config)
 
     app = tornado.web.Application([
             url( r'/', MainHandler),
-            url(r'/requests', RequestHandler, {'redis': redis}),
-            url(r'/requests/(.*)', RequestHandler, {'redis': redis}),
+            url(r'/requests', RequestHandler, {'db_session': db_session}),
+            url(r'/requests/(.*)', RequestHandler, {'db_session': db_session}),
         ],
-        debug=config['default']['DEBUG'],
-        autoreload=config['default']['AUTORELOAD']
+        debug=config['default'].getboolean('DEBUG'),
     )
     return app
 

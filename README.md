@@ -12,6 +12,16 @@ To enter the virtualenv manually (a la `source .venv/bin/activate`):
 
 If you want to automatically load the virtual environment whenever you enter the project directory, take a look at [direnv](https://direnv.net/).  An `.envrc` file is included in this repository.  direnv will activate and deactivate virtualenvs for you when you enter and leave the directory.
 
+### Database Setup
+
+The app assumes that you have a local postgres 9.4+ instance running on the default port (5432), with credentials atat/password and database `requests_queue`. If you've installed postgres with `brew install postgres`, run the following:
+
+```
+createuser -s atat
+psql -c 'create database requests_queue;' -U atat
+pipenv run alembic upgrade head
+```
+
 ## Running (development)
 
 To start the app and watch for changes:
