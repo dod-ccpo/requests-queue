@@ -57,10 +57,11 @@ class RequestHandler(RequestHandler):
         try:
             # Query for request matching id, acquiring a row-level write lock.
             # https://www.postgresql.org/docs/10/static/sql-select.html#SQL-FOR-UPDATE-SHARE
-            request = self.db_session.query(Request) \
-                                     .filter(Request.id == request_id) \
-                                     .with_for_update(of=Request) \
-                                     .one()
+            request = (self.db_session.query(Request)
+                                      .filter(Request.creator == json['creator_id'])
+                                      .filter(Request.id == request_id)
+                                      .with_for_update(of=Request)
+                                      .one())
         except NoResultFound:
             return self.send_error(404)
 
