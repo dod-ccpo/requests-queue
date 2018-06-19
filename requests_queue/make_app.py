@@ -5,7 +5,8 @@ from configparser import ConfigParser
 
 from requests_queue.redis import make_redis
 from requests_queue.database import make_db
-from requests_queue.handlers.request import RequestHandler
+from requests_queue.handlers.requests import RequestsHandler
+from requests_queue.handlers.user_requests import UserRequestsHandler
 from requests_queue.handlers.main import MainHandler
 
 
@@ -14,8 +15,12 @@ def make_app(config):
 
     app = tornado.web.Application([
             url( r'/', MainHandler),
-            url(r'/requests', RequestHandler, {'db_session': db_session}),
-            url(r'/requests/(.*)', RequestHandler, {'db_session': db_session}),
+
+            url(r'/requests', RequestsHandler, {'db_session': db_session}),
+            url(r'/requests/(.*)', RequestsHandler, {'db_session': db_session}),
+
+            url(r'/users/(.*)/requests', UserRequestsHandler, {'db_session': db_session}),
+            url(r'/users/(.*)/requests/(.*)', UserRequestsHandler, {'db_session': db_session}),
         ],
         debug=config['default'].getboolean('DEBUG'),
     )

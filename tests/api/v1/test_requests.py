@@ -87,8 +87,9 @@ def test_create_request(http_client, base_url):
 
 @pytest.mark.gen_test
 def test_update_request(http_client, base_url):
+    creator_id = 'bf53276a-29e0-476c-b820-b313ec19ec7f'
     sample_request = {
-        'creator_id': 'bf53276a-29e0-476c-b820-b313ec19ec7f',
+        'creator_id': creator_id,
         'request': {
             'red': {
                 'a': 1,
@@ -107,7 +108,10 @@ def test_update_request(http_client, base_url):
     request_id = loads(response.body)['id']
 
     request_delta = {
-        'red': {'b': 20}
+        'creator_id': creator_id,
+        'request': {
+            'red': {'b': 20}
+        }
     }
 
     response = yield http_client.fetch(
@@ -124,15 +128,19 @@ def test_update_nonexistent_request(http_client, base_url):
         base_url + '/requests/{}'.format('bf53276a-29e0-476c-b820-b313ec19ec7d'),
         method='PATCH',
         headers={'Content-Type': 'application/json'},
-        body=dumps({'a': 'b'}),
+        body=dumps({
+            'creator_id': '4fa5efcf-8772-473f-8767-3c6c23b41bf3',
+            'a': 'b'
+        }),
         raise_error=False)
     assert response.code == 404
 
 
 @pytest.mark.gen_test
-def test_get_requests(http_client, base_url):
+def test_get_user_requests(http_client, base_url):
+    user_id = '5c40a181-c669-4d9f-8273-3564bc3f41ff'
     response = yield http_client.fetch(
-        base_url + '/requests',
+        base_url + '/users/{}/requests'.format(user_id),
         method='GET',
         headers={'Content-Type': 'application/json'})
     assert response.code == 200
