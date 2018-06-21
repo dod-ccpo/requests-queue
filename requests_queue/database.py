@@ -1,9 +1,8 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 
 def make_db(config):
-    engine = create_engine(config['default']['DATABASE_URI'])
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    return Session()
+    engine = create_engine(config['default']['DATABASE_URI'], echo=True)
+    session = scoped_session(sessionmaker(bind=engine))
+    return session

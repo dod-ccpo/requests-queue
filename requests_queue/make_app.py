@@ -10,8 +10,8 @@ from requests_queue.handlers.user_requests import UserRequestsHandler
 from requests_queue.handlers.main import MainHandler
 
 
-def make_app(config):
-    db_session = make_db(config)
+def make_app(config, deps):
+    db_session = deps['db']
 
     app = tornado.web.Application([
             url( r'/', MainHandler),
@@ -42,3 +42,8 @@ def make_config():
     # ENV_CONFIG will override values in BASE_CONFIG.
     config.read([BASE_CONFIG_FILENAME, ENV_CONFIG_FILENAME])
     return config
+
+def make_deps(config):
+    return {
+        'db': make_db(config)
+    }
