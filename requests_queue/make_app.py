@@ -16,11 +16,11 @@ def make_app(config):
     app = tornado.web.Application([
             url( r'/', MainHandler),
 
-            url(r'/requests', RequestsHandler, {'db_session': db_session}),
-            url(r'/requests/(.*)', RequestsHandler, {'db_session': db_session}),
+            url(r'/v1/requests', RequestsHandler, {'db_session': db_session}),
+            url(r'/v1/requests/(.*)', RequestsHandler, {'db_session': db_session}),
 
-            url(r'/users/(.*)/requests', UserRequestsHandler, {'db_session': db_session}),
-            url(r'/users/(.*)/requests/(.*)', UserRequestsHandler, {'db_session': db_session}),
+            url(r'/v1/users/(.*)/requests', UserRequestsHandler, {'db_session': db_session}),
+            url(r'/v1/users/(.*)/requests/(.*)', UserRequestsHandler, {'db_session': db_session}),
         ],
         debug=config['default'].getboolean('DEBUG'),
     )
