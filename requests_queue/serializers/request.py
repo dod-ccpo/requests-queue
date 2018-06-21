@@ -1,7 +1,9 @@
-from marshmallow_sqlalchemy import ModelSchema
-from requests_queue.models.request import Request
+from marshmallow import Schema, fields
 
 
-class RequestSerializer(ModelSchema):
-    class Meta:
-        model = Request
+class RequestSerializer(Schema):
+    id = fields.UUID()
+    creator = fields.UUID()
+    time_created = fields.DateTime()
+    body = fields.Dict()
+    status = fields.String()

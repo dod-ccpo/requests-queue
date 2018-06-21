@@ -163,3 +163,19 @@ def test_get_user_request(http_client, base_url):
         method='GET')
     assert response.code == 200
     assert loads(response.body)['id'] == request_id
+
+@pytest.mark.gen_test
+def test_request_starts_out_pending(http_client, base_url):
+    response = yield http_client.fetch(
+        base_url + '/requests',
+        method='POST',
+        headers={'Content-Type': 'application/json'},
+        body=dumps(sample_post_body))
+    request_id = loads(response.body)['id']
+
+    response = yield http_client.fetch(
+        '{}/users/{}/requests/{}'.format(
+            base_url, sample_post_body['creator_id'], request_id),
+        method='GET')
+    assert response.code == 200
+    assert loads(response.body)['status'] == 'pending'
