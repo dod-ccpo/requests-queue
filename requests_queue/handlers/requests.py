@@ -1,7 +1,7 @@
 from json import loads
 from tornado.web import RequestHandler
 
-from requests_queue.models import Request
+from requests_queue.models import Request, StatusEvent
 from requests_queue.serializers.request import RequestSerializer
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.attributes import flag_modified
@@ -42,8 +42,7 @@ class RequestsHandler(RequestHandler):
             # Query for request matching id, acquiring a row-level write lock.
             # https://www.postgresql.org/docs/10/static/sql-select.html#SQL-FOR-UPDATE-SHARE
             request = (self.db_session.query(Request)
-                                      .filter(Request.creator == json['creator_id'])
-                                      .filter(Request.id == request_id)
+                                      .filter_by(id=request_id, creator=json['creator_id'])
                                       .with_for_update(of=Request)
                                       .one())
         except NoResultFound:
@@ -62,7 +61,10 @@ class RequestsHandler(RequestHandler):
 
     def post(self):
         json = parse_body(self.request)
+
         request = Request(creator=json['creator_id'], body=json['request'])
+        status_event = StatusEvent(new_status='pending')
+        request.status_events.append(status_event)
         self.db_session.add(request)
         self.db_session.commit()
 

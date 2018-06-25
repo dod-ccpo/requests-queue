@@ -77,7 +77,7 @@ sample_post_body = {
 @pytest.mark.gen_test
 def test_create_request(http_client, base_url):
     response = yield http_client.fetch(
-        base_url + '/requests',
+        base_url + '/v1/requests',
         method='POST',
         headers={'Content-Type': 'application/json'},
         body=dumps(sample_post_body))
@@ -101,7 +101,7 @@ def test_update_request(http_client, base_url):
         }
     }
     response = yield http_client.fetch(
-        base_url + '/requests',
+        base_url + '/v1/requests',
         method='POST',
         headers={'Content-Type': 'application/json'},
         body=dumps(sample_request))
@@ -115,7 +115,7 @@ def test_update_request(http_client, base_url):
     }
 
     response = yield http_client.fetch(
-        base_url + '/requests/{}'.format(request_id),
+        base_url + '/v1/requests/{}'.format(request_id),
         method='PATCH',
         headers={'Content-Type': 'application/json'},
         body=dumps(request_delta)
@@ -125,7 +125,7 @@ def test_update_request(http_client, base_url):
 @pytest.mark.gen_test
 def test_update_nonexistent_request(http_client, base_url):
     response = yield http_client.fetch(
-        base_url + '/requests/{}'.format('bf53276a-29e0-476c-b820-b313ec19ec7d'),
+        base_url + '/v1/requests/{}'.format('bf53276a-29e0-476c-b820-b313ec19ec7d'),
         method='PATCH',
         headers={'Content-Type': 'application/json'},
         body=dumps({
@@ -140,7 +140,7 @@ def test_update_nonexistent_request(http_client, base_url):
 def test_get_user_requests(http_client, base_url):
     user_id = '5c40a181-c669-4d9f-8273-3564bc3f41ff'
     response = yield http_client.fetch(
-        base_url + '/users/{}/requests'.format(user_id),
+        base_url + '/v1/users/{}/requests'.format(user_id),
         method='GET',
         headers={'Content-Type': 'application/json'})
     assert response.code == 200
@@ -151,15 +151,31 @@ def test_get_user_requests(http_client, base_url):
 @pytest.mark.gen_test
 def test_get_user_request(http_client, base_url):
     response = yield http_client.fetch(
-        base_url + '/requests',
+        base_url + '/v1/requests',
         method='POST',
         headers={'Content-Type': 'application/json'},
         body=dumps(sample_post_body))
     request_id = loads(response.body)['id']
 
     response = yield http_client.fetch(
-        '{}/users/{}/requests/{}'.format(
+        '{}/v1/users/{}/requests/{}'.format(
             base_url, sample_post_body['creator_id'], request_id),
         method='GET')
     assert response.code == 200
     assert loads(response.body)['id'] == request_id
+
+@pytest.mark.gen_test
+def test_request_starts_out_pending(http_client, base_url):
+    response = yield http_client.fetch(
+        base_url + '/v1/requests',
+        method='POST',
+        headers={'Content-Type': 'application/json'},
+        body=dumps(sample_post_body))
+    request_id = loads(response.body)['id']
+
+    response = yield http_client.fetch(
+        '{}/v1/users/{}/requests/{}'.format(
+            base_url, sample_post_body['creator_id'], request_id),
+        method='GET')
+    assert response.code == 200
+    assert loads(response.body)['status'] == 'pending'
