@@ -11,13 +11,14 @@ from requests_queue.handlers.user_requests import UserRequestsHandler
 
 def make_app(config, deps):
     db_session = deps['db']
+    prefix = '/api/v1'
 
     app = tornado.web.Application([
-            url(r'/api/v1/requests', RequestsHandler, {'db_session': db_session}),
-            url(r'/api/v1/requests/(.*)', RequestsHandler, {'db_session': db_session}),
+            url(prefix + r'/requests', RequestsHandler, {'db_session': db_session}),
+            url(prefix + r'/requests/(.*)', RequestsHandler, {'db_session': db_session}),
 
-            url(r'/api/v1/users/(.*)/requests', UserRequestsHandler, {'db_session': db_session}),
-            url(r'/api/v1/users/(.*)/requests/(.*)', UserRequestsHandler, {'db_session': db_session}),
+            url(prefix + r'/users/(.*)/requests', UserRequestsHandler, {'db_session': db_session}),
+            url(prefix + r'/users/(.*)/requests/(.*)', UserRequestsHandler, {'db_session': db_session}),
         ],
         debug=config['default'].getboolean('DEBUG'),
     )
