@@ -1,5 +1,5 @@
 from json import loads
-from tornado.web import RequestHandler
+from requests_queue.handlers.base import BaseHandler
 
 from requests_queue.models import Request, StatusEvent
 from requests_queue.serializers.request import RequestSerializer
@@ -27,7 +27,7 @@ def deep_merge(source, destination: dict):
     return _deep_merge(source, dict(destination))
 
 
-class RequestsHandler(RequestHandler):
+class RequestsHandler(BaseHandler):
 
     def initialize(self, db_session):
         self.db_session = db_session

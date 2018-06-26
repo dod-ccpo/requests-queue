@@ -7,20 +7,18 @@ from requests_queue.redis import make_redis
 from requests_queue.database import make_db
 from requests_queue.handlers.requests import RequestsHandler
 from requests_queue.handlers.user_requests import UserRequestsHandler
-from requests_queue.handlers.main import MainHandler
 
 
 def make_app(config, deps):
     db_session = deps['db']
+    prefix = '/api/v1'
 
     app = tornado.web.Application([
-            url( r'/', MainHandler),
+            url(prefix + r'/requests', RequestsHandler, {'db_session': db_session}),
+            url(prefix + r'/requests/(.*)', RequestsHandler, {'db_session': db_session}),
 
-            url(r'/v1/requests', RequestsHandler, {'db_session': db_session}),
-            url(r'/v1/requests/(.*)', RequestsHandler, {'db_session': db_session}),
-
-            url(r'/v1/users/(.*)/requests', UserRequestsHandler, {'db_session': db_session}),
-            url(r'/v1/users/(.*)/requests/(.*)', UserRequestsHandler, {'db_session': db_session}),
+            url(prefix + r'/users/(.*)/requests', UserRequestsHandler, {'db_session': db_session}),
+            url(prefix + r'/users/(.*)/requests/(.*)', UserRequestsHandler, {'db_session': db_session}),
         ],
         debug=config['default'].getboolean('DEBUG'),
     )

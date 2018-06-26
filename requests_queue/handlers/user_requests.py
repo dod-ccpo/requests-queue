@@ -1,10 +1,10 @@
-from tornado.web import RequestHandler
+from requests_queue.handlers.base import BaseHandler
 
 from requests_queue.models import Request
 from requests_queue.serializers.request import RequestSerializer
 
 
-class UserRequestsHandler(RequestHandler):
+class UserRequestsHandler(BaseHandler):
 
     def initialize(self, db_session):
         self.db_session = db_session

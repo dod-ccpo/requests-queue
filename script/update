@@ -8,3 +8,5 @@ cd "$(dirname "${0}")/.."
 
 # Update dependencies
 script/bootstrap
+
+pipenv run alembic upgrade head
