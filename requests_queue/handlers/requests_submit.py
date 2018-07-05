@@ -15,7 +15,9 @@ def should_auto_approve(request):
 
 
 @tornado.gen.coroutine
-def handle_request_submitted(db_session, request):
+def submit_request(db_session, request):
+    request.status_events.append(StatusEvent(new_status="submitted"))
+
     if should_auto_approve(request):
         request.status_events.append(StatusEvent(new_status="approved"))
 
@@ -41,10 +43,8 @@ class RequestsSubmitHandler(BaseHandler):
         except NoResultFound:
             return self.send_error(404)
 
-        request.status_events.append(StatusEvent(new_status="submitted"))
-
         IOLoop.current().spawn_callback(
-            handle_request_submitted, self.db_session, request
+            submit_request, self.db_session, request
         )
 
         self.set_status(202)
