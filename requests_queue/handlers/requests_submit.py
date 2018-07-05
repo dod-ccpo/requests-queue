@@ -37,7 +37,6 @@ class RequestsSubmitHandler(BaseHandler):
             request = (
                 self.db_session.query(Request)
                 .filter_by(id=request_id)
-                .with_for_update(of=Request)
                 .one()
             )
         except NoResultFound:
