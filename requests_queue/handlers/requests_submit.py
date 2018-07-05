@@ -18,8 +18,9 @@ def should_auto_approve(request):
 def handle_request_submitted(db_session, request):
     if should_auto_approve(request):
         request.status_events.append(StatusEvent(new_status="approved"))
-        db_session.add(request)
-        db_session.commit()
+
+    db_session.add(request)
+    db_session.commit()
 
 
 class RequestsSubmitHandler(BaseHandler):
