@@ -3,8 +3,9 @@ import tornado.web
 from tornado.web import url
 from configparser import ConfigParser
 
-from requests_queue.redis import make_redis
 from requests_queue.database import make_db
+from requests_queue.handlers.root import RootHandler
+from requests_queue.handlers.status import StatusHandler
 from requests_queue.handlers.requests import RequestsHandler
 from requests_queue.handlers.user_requests import UserRequestsHandler
 
@@ -14,6 +15,9 @@ def make_app(config, deps):
     prefix = '/api/v1'
 
     app = tornado.web.Application([
+            url(r'/', RootHandler),
+            url(r'/status', StatusHandler),
+
             url(prefix + r'/requests', RequestsHandler, {'db_session': db_session}),
             url(prefix + r'/requests/(.*)', RequestsHandler, {'db_session': db_session}),
 
