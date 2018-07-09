@@ -20,6 +20,7 @@ class UserRequestsHandler(BaseHandler):
         else:
             requests = (self.db_session.query(Request)
                                        .filter(Request.creator == user_id)
+                                       .order_by(Request.time_created.desc())
                                        .all())
             serialized_requests = RequestSerializer().dump(requests, many=True).data
             self.write({'requests': serialized_requests})

@@ -28,6 +28,8 @@ A `202 Accepted` response with no body.
 
 Update an existing request.
 
+Request:
+
 ```json
 PATCH /api/v1/requests/<request_id>
 
@@ -37,6 +39,20 @@ PATCH /api/v1/requests/<request_id>
 
     }
 }
+```
+
+Response:
+
+A `202 Accepted` response with no body.
+
+### Submit request
+
+Submit a request.
+
+Request:
+
+```json
+POST /api/v1/requests/<request_id>/submit
 ```
 
 Response:

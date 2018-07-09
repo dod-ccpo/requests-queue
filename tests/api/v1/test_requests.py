@@ -1,76 +1,72 @@
 import pytest
 from json import dumps, loads
-import pendulum
-
 
 sample_request_body = {
-    'details_of_use': {
-        'application_details': {
-            'application_name': 'Death Star VM',
-            'application_description': 'A moon-sized space station with abilities to destroy stuff.',
-            'estimated_use_dollars': 100000000,
-            'estimation_method': 'csp_usage_calculator',
-            'expected_start_date': pendulum.datetime(2018, 10, 1, 0, 0, 0).isoformat(),
-            'expected_usage_months': 6,
-            'classification_level': 'unclassified',
-            'service_branch': ['air_force', 'marines']
-        },
-        'computation': {
-            'num_vcpu_cores': 200,
-            'total_ram': 30000000000000,
-        },
-        'storage': {
-            'object_storage': 4000000000,
-            'server_storage': 8000000000
-        },
-        'estimated_application_usage': {
-            'active_users': 240000,
-            'peak_concurrent_users': 100000,
-            'requests_per_min_user': 100000000,
-            'environments': 4,
-        },
+    "details_of_use": {
+        "pe_id": "123",
+        "uii_ids": "1\r\n2\r\n3",
+        "total_ram": 2,
+        "date_start": "2018-07-02",
+        "total_cores": 1,
+        "dollar_value": 100,
+        "app_description": "Hello",
+        "num_applications": 1,
+        "has_migration_office": "yes",
+        "total_object_storage": 3,
+        "total_server_storage": 5,
+        "has_contractor_advisor": "yes",
+        "total_database_storage": 4,
+        "supported_organizations": "army",
+        "supporting_organization": "AF CCE/HNI",
+        "is_migrating_application": "yes",
     },
-    'professional_services': {
-        'have_migration_contractor': True,
-        'have_cloud_contractor': True,
-        'need_cloud_contractor': False,
-        'will_be_developed_by_contractor': True,
-        'needs_native_cloud_infrastructure': True,
+    "information_about_you": {
+        "citizenship": "United States",
+        "designation": "hello",
+        "phone_number": "7728349265",
+        "email_request": "meow@hello.com",
+        "fname_request": "Richard",
+        "lname_request": "Howard",
+        "service_branch": "army",
+        "date_latest_training": "2018-06-24",
     },
-    'organization': {
-        'user': {
-            'name': 'Friedrich Straat',
-            'email': 'fstraat@dds.mil',
-            'phone': '1234567890',
-            'location': 'Ft. Gordon',
-            'organization': 'DDS',
-            'office_symbol': 'Department of Defense',
-            'citizenship': 'foreign_national',
-            'designation': 'military',
-            'latest_ia_completion_date': '',
-            'collaborators': [
-                {
-                    'name': 'Pietro Quirinis',
-                    'email': 'quirinis@gov.mil',
-                    'role': 'contracting_officer'
-                },
-                {
-                    'name': '',
-                    'email': '',
-                    'role': 'financial_manager'
-                }
-            ]
-        }
+    "primary_poc": {
+        "dodid_poc": "1234567890",
+        "email_poc": "richard@promptworks.com",
+        "fname_poc": "a",
+        "lname_poc": "b",
     },
-    'task_order': {
-        'order_number': '1234',
-        'funding_type': 'rdte'
-    }
+}
+
+partial_request_body = {
+    "details_of_use": {
+        "pe_id": "123",
+        "uii_ids": "1\r\n2\r\n3",
+        "total_ram": 2,
+        "date_start": "2018-07-02",
+        "total_cores": 1,
+        "dollar_value": 100,
+        "app_description": "Hello",
+        "num_applications": 1,
+        "has_migration_office": "yes",
+        "total_object_storage": 3,
+        "total_server_storage": 5,
+        "has_contractor_advisor": "yes",
+        "total_database_storage": 4,
+        "supported_organizations": "army",
+        "supporting_organization": "AF CCE/HNI",
+        "is_migrating_application": "yes",
+    },
 }
 
 sample_post_body = {
     'creator_id': 'e59a9d20-c31e-47f5-a9ae-d791ad8fffa4',
     'request': sample_request_body,
+}
+
+partial_post_body = {
+    'creator_id': 'e59a9d20-c31e-47f5-a9ae-d791ad8fffa4',
+    'request': partial_request_body,
 }
 
 
@@ -122,6 +118,21 @@ def test_update_request(http_client, base_url):
     )
     assert response.code == 202
 
+    response = yield http_client.fetch(
+        base_url + '/api/v1/users/{}/requests/{}'.format(creator_id, request_id),
+        method='GET',
+        headers={'Content-Type': 'application/json'}
+    )
+    assert loads(response.body)['body'] == {
+        'red': {
+            'a': 1,
+            'b': 20,
+            'c': 3
+        },
+        'green': [1, 2, 3],
+        'blue': 3
+    }
+
 @pytest.mark.gen_test
 def test_update_nonexistent_request(http_client, base_url):
     response = yield http_client.fetch(
@@ -165,12 +176,12 @@ def test_get_user_request(http_client, base_url):
     assert loads(response.body)['id'] == request_id
 
 @pytest.mark.gen_test
-def test_request_starts_out_pending(http_client, base_url):
+def test_request_starts_out_incomplete(http_client, base_url):
     response = yield http_client.fetch(
         base_url + '/api/v1/requests',
         method='POST',
         headers={'Content-Type': 'application/json'},
-        body=dumps(sample_post_body))
+        body=dumps(partial_post_body))
     request_id = loads(response.body)['id']
 
     response = yield http_client.fetch(
@@ -178,4 +189,51 @@ def test_request_starts_out_pending(http_client, base_url):
             base_url, sample_post_body['creator_id'], request_id),
         method='GET')
     assert response.code == 200
-    assert loads(response.body)['status'] == 'pending'
+    assert loads(response.body)['status'] == 'incomplete'
+
+@pytest.mark.gen_test
+def test_finishing_request_moves_it_to_pending_submission(http_client, base_url):
+    creator_id = '9dcbb00f-e171-41c8-80e9-40ada34a4bc8'
+    response = yield http_client.fetch(
+        base_url + '/api/v1/requests',
+        method='POST',
+        headers={'Content-Type': 'application/json'},
+        body=dumps({'creator_id': creator_id, 'request': {'incomplete': 'request'}}))
+    request_id = loads(response.body)['id']
+
+
+    response = yield http_client.fetch(
+        base_url + '/api/v1/requests/{}'.format(request_id),
+        method='PATCH',
+        headers={'Content-Type': 'application/json'},
+        body=dumps({'creator_id': creator_id, 'request': sample_request_body}))
+
+    response = yield http_client.fetch(
+        '{}/api/v1/users/{}/requests/{}'.format(
+            base_url, sample_post_body['creator_id'], request_id),
+        method='GET')
+    assert loads(response.body)['status'] == 'pending_submission'
+
+
+@pytest.mark.gen_test
+def test_submit_triggers_auto_approval(http_client, base_url):
+    response = yield http_client.fetch(
+        base_url + '/api/v1/requests',
+        method='POST',
+        headers={'Content-Type': 'application/json'},
+        body=dumps(sample_post_body))
+    request_id = loads(response.body)['id']
+
+    yield http_client.fetch(
+        base_url + '/api/v1/requests/{}/submit'.format(request_id),
+        method='POST',
+        body=dumps({}),
+        headers={'Content-Type': 'application/json'}
+    )
+
+    response = yield http_client.fetch(
+        '{}/api/v1/users/{}/requests/{}'.format(
+            base_url, sample_post_body['creator_id'], request_id),
+        method='GET')
+    assert response.code == 200
+    assert loads(response.body)['status'] == 'approved'
