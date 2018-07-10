@@ -16,8 +16,7 @@ class Request(Base):
     body = Column(JSONB)
     status_events = relationship('StatusEvent',
                                  backref='request',
-                                 order_by='StatusEvent.time_created')
-    # request_type
+                                 order_by='StatusEvent.sequence')
 
     @property
     def status(self):
