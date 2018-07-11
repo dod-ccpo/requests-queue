@@ -23,4 +23,4 @@ def upgrade():
 
 def downgrade():
     connection = op.get_bind()
-    connection.execute("DROP EXTENSION IF EXISTS 'uuid-ossp'")
+    connection.execute('DROP EXTENSION IF EXISTS "uuid-ossp"')
