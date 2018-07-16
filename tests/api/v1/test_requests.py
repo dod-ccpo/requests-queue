@@ -202,6 +202,34 @@ def test_get_all_requests(http_client, base_url):
     assert len(requests) == pre_test_requests_count + 2
 
 @pytest.mark.gen_test
+def test_get_requests_by_creator_id(http_client, base_url):
+    response = yield http_client.fetch(
+        base_url + '/api/v1/requests',
+        method='POST',
+        headers={'Content-Type': 'application/json'},
+        body=dumps(sample_post_body))
+
+    sample_post_body2 = dict(sample_post_body)
+    sample_post_body2["creator_id"] = "1763e7ba-153b-41ff-b148-a7c23beea659"
+
+    yield http_client.fetch(
+        base_url + '/api/v1/requests',
+        method='POST',
+        headers={'Content-Type': 'application/json'},
+        body=dumps(sample_post_body2))
+
+    response = yield http_client.fetch(
+        '{}/api/v1/requests?creator_id={}'.format(
+            base_url, sample_post_body['creator_id']
+        ),
+        method='GET'
+    )
+    assert response.code == 200
+
+    requests = loads(response.body)["requests"]
+    assert len(requests) == 1
+
+@pytest.mark.gen_test
 def test_request_starts_out_incomplete(http_client, base_url):
     response = yield http_client.fetch(
         base_url + '/api/v1/requests',

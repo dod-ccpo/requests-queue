@@ -29,8 +29,8 @@ class RequestsIndexHandler(BaseHandler):
         self.set_status(202)
         self.write(RequestSerializer().dump(request).data)
 
-    def get(self):
-        requests = self.requests_repo.get_many(creator_id=None)
+    def get(self, **kwargs):
+        creator_id = self.get_argument('creator_id', None)
+        requests = self.requests_repo.get_many(creator_id=creator_id)
         serialized_requests = RequestSerializer().dump(requests, many=True).data
         self.write({'requests': serialized_requests})
-
