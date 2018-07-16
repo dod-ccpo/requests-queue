@@ -6,7 +6,7 @@
 
 Create a new JEDI request.
 
-Request:
+#### Request
 
 ```json
 POST /api/v1/requests
@@ -20,7 +20,7 @@ POST /api/v1/requests
 
 ```
 
-Response:
+#### Response
 
 A `202 Accepted` response with no body.
 
@@ -28,7 +28,7 @@ A `202 Accepted` response with no body.
 
 Update an existing request.
 
-Request:
+#### Request
 
 ```json
 PATCH /api/v1/requests/<request_id>
@@ -41,7 +41,7 @@ PATCH /api/v1/requests/<request_id>
 }
 ```
 
-Response:
+#### Response
 
 A `202 Accepted` response with no body.
 
@@ -49,13 +49,13 @@ A `202 Accepted` response with no body.
 
 Submit a request.
 
-Request:
+#### Request
 
 ```json
 POST /api/v1/requests/<request_id>/submit
 ```
 
-Response:
+#### Response
 
 A `202 Accepted` response with no body.
 
@@ -63,11 +63,17 @@ A `202 Accepted` response with no body.
 
 Get a list of a user's requests.
 
+#### Request
+
 ```
-GET /api/v1/users/<user_id>/requests
+GET /api/v1/users/<user_id>/requests?creator_id=164497f6-c1ea-4f42-a5ef-101da278c012
 ```
 
-Response:
+##### Arguments
+
+- `creator_id`: Filters the list of requests to a given user id. If this param is not provided, all requests will be returned.
+
+#### Response
 
 ```json
 [
@@ -91,12 +97,12 @@ Response:
 
 ### Get request
 
-Get a user's request.
+Retrieve a request.
 
 Request:
 
 ```
-GET /api/v1/users/<user_id>/requests/<request_id>
+GET /api/v1/requests/<request_id>
 ```
 
 Response:
