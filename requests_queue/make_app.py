@@ -7,8 +7,8 @@ from requests_queue.database import make_db
 from requests_queue.handlers.root import RootHandler
 from requests_queue.handlers.status import StatusHandler
 from requests_queue.handlers.requests import RequestsHandler
-from requests_queue.handlers.user_requests import UserRequestsHandler
 from requests_queue.handlers.requests_submit import RequestsSubmitHandler
+from requests_queue.handlers.requests_index import RequestsIndexHandler
 
 
 def make_app(config, deps):
@@ -19,12 +19,9 @@ def make_app(config, deps):
             url(r'/', RootHandler),
             url(r'/status', StatusHandler),
 
-            url(prefix + r'/requests', RequestsHandler, {'db_session': db_session}),
+            url(prefix + r'/requests', RequestsIndexHandler, {'db_session': db_session}),
             url(prefix + r'/requests/(.*)/submit', RequestsSubmitHandler, {'db_session': db_session}),
             url(prefix + r'/requests/(.*)', RequestsHandler, {'db_session': db_session}),
-
-            url(prefix + r'/users/(.*)/requests', UserRequestsHandler, {'db_session': db_session}),
-            url(prefix + r'/users/(.*)/requests/(.*)', UserRequestsHandler, {'db_session': db_session}),
         ],
         debug=config['default'].getboolean('DEBUG'),
     )

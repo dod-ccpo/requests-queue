@@ -8,6 +8,8 @@ from sqlalchemy import exists, and_
 from requests_queue.handlers.base import BaseHandler
 from requests_queue.models import Request, StatusEvent
 from requests_queue.serializers.request import RequestSerializer
+from requests_queue.domain.requests import Requests
+from .utils import parse_body
 
 
 def should_allow_submission(request):
@@ -45,10 +47,6 @@ def update_request(db_session, request_id, request_delta):
     db_session.commit()
 
 
-def parse_body(request):
-    return loads(request.body.decode("utf-8"))
-
-
 def deep_merge(source, destination: dict):
     """
     Merge source dict into destination dict recursively.
@@ -76,6 +74,7 @@ def request_exists(db_session, request_id, creator_id):
 class RequestsHandler(BaseHandler):
     def initialize(self, db_session):
         self.db_session = db_session
+        self.requests_repo = Requests(self.db_session)
 
     def patch(self, request_id):
         """
@@ -93,14 +92,10 @@ class RequestsHandler(BaseHandler):
 
         self.set_status(202)
 
-    def post(self):
-        json = parse_body(self.request)
-
-        request = Request(creator=json["creator_id"], body=json["request"])
-        status_event = StatusEvent(new_status="incomplete")
-        request.status_events.append(status_event)
-        self.db_session.add(request)
-        self.db_session.commit()
-
-        self.set_status(202)
-        self.write(RequestSerializer().dump(request).data)
+    def get(self, request_id):
+        request = self.requests_repo.get(request_id)
+        if request is not None:
+            serialized_request = RequestSerializer().dump(request).data
+            self.write(serialized_request)
+        else:
+            self.send_error(404)

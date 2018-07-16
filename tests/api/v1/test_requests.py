@@ -119,7 +119,7 @@ def test_update_request(http_client, base_url):
     assert response.code == 202
 
     response = yield http_client.fetch(
-        base_url + '/api/v1/users/{}/requests/{}'.format(creator_id, request_id),
+        base_url + '/api/v1/requests/{}'.format(request_id),
         method='GET',
         headers={'Content-Type': 'application/json'}
     )
@@ -151,7 +151,7 @@ def test_update_nonexistent_request(http_client, base_url):
 def test_get_user_requests(http_client, base_url):
     user_id = '5c40a181-c669-4d9f-8273-3564bc3f41ff'
     response = yield http_client.fetch(
-        base_url + '/api/v1/users/{}/requests'.format(user_id),
+        base_url + '/api/v1/requests?creator_id={}'.format(user_id),
         method='GET',
         headers={'Content-Type': 'application/json'})
     assert response.code == 200
@@ -169,11 +169,37 @@ def test_get_user_request(http_client, base_url):
     request_id = loads(response.body)['id']
 
     response = yield http_client.fetch(
-        '{}/api/v1/users/{}/requests/{}'.format(
-            base_url, sample_post_body['creator_id'], request_id),
+        '{}/api/v1/requests/{}'.format(
+            base_url, request_id),
         method='GET')
     assert response.code == 200
     assert loads(response.body)['id'] == request_id
+
+@pytest.mark.gen_test
+def test_get_all_requests(http_client, base_url):
+    response = yield http_client.fetch(base_url + '/api/v1/requests', method='GET')
+    pre_test_requests_count = len(loads(response.body)["requests"])
+
+    response = yield http_client.fetch(
+        base_url + '/api/v1/requests',
+        method='POST',
+        headers={'Content-Type': 'application/json'},
+        body=dumps(sample_post_body))
+
+    sample_post_body2 = dict(sample_post_body)
+    sample_post_body2["creator_id"] = "1763e7ba-153b-41ff-b148-a7c23beea659"
+
+    yield http_client.fetch(
+        base_url + '/api/v1/requests',
+        method='POST',
+        headers={'Content-Type': 'application/json'},
+        body=dumps(sample_post_body2))
+
+    response = yield http_client.fetch(base_url + '/api/v1/requests', method='GET')
+    assert response.code == 200
+
+    requests = loads(response.body)["requests"]
+    assert len(requests) == pre_test_requests_count + 2
 
 @pytest.mark.gen_test
 def test_request_starts_out_incomplete(http_client, base_url):
@@ -185,8 +211,8 @@ def test_request_starts_out_incomplete(http_client, base_url):
     request_id = loads(response.body)['id']
 
     response = yield http_client.fetch(
-        '{}/api/v1/users/{}/requests/{}'.format(
-            base_url, sample_post_body['creator_id'], request_id),
+        '{}/api/v1/requests/{}'.format(
+            base_url, request_id),
         method='GET')
     assert response.code == 200
     assert loads(response.body)['status'] == 'incomplete'
@@ -209,8 +235,8 @@ def test_finishing_request_moves_it_to_pending_submission(http_client, base_url)
         body=dumps({'creator_id': creator_id, 'request': sample_request_body}))
 
     response = yield http_client.fetch(
-        '{}/api/v1/users/{}/requests/{}'.format(
-            base_url, sample_post_body['creator_id'], request_id),
+        '{}/api/v1/requests/{}'.format(
+            base_url, request_id),
         method='GET')
     assert loads(response.body)['status'] == 'pending_submission'
 
@@ -232,8 +258,8 @@ def test_submit_triggers_auto_approval(http_client, base_url):
     )
 
     response = yield http_client.fetch(
-        '{}/api/v1/users/{}/requests/{}'.format(
-            base_url, sample_post_body['creator_id'], request_id),
+        '{}/api/v1/requests/{}'.format(
+            base_url, request_id),
         method='GET')
     assert response.code == 200
     assert loads(response.body)['status'] == 'approved'
