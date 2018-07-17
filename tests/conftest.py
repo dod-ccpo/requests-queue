@@ -3,7 +3,7 @@ from requests_queue.make_app import make_app, make_deps, make_config
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def app():
     config = make_config()
     base_deps = make_deps(config)
