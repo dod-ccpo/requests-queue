@@ -20,6 +20,7 @@ pytest-tornado = "==0.5.0"
 pylint = "*"
 ipython = "*"
 ipdb = "*"
+factory-boy = "*"
 
 [requires]
 python_version = "3.6"
