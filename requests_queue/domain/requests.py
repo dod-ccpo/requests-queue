@@ -12,6 +12,17 @@ class Requests(object):
     def __init__(self, db_session):
         self.db_session = db_session
 
+    def create(self, creator_id, body):
+        request = Request(creator=creator_id, body=body)
+
+        status_event = StatusEvent(new_status="incomplete")
+        request.status_events.append(status_event)
+
+        self.db_session.add(request)
+        self.db_session.commit()
+
+        return request
+
     def exists(self, request_id, creator_id):
         return self.db_session.query(
             exists().where(

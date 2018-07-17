@@ -19,13 +19,7 @@ class RequestsIndexHandler(BaseHandler):
 
     def post(self):
         json = parse_body(self.request)
-
-        request = Request(creator=json["creator_id"], body=json["request"])
-        status_event = StatusEvent(new_status="incomplete")
-        request.status_events.append(status_event)
-        self.db_session.add(request)
-        self.db_session.commit()
-
+        request = self.requests_repo.create(json["creator_id"], json["request"])
         self.set_status(202)
         self.write(RequestSerializer().dump(request).data)
 
