@@ -1,7 +1,20 @@
 language: python
 python:
   - "3.6"
+services:
+  - postgresql
+addons:
+  postgresql: "9.6"
+git:
+  submodules: false
+env:
+  - FLASK_ENV=ci
+
 before_install:
+  # Use sed to replace the SSH URL with the public HTTP URL
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  # Manually initialize submodules
+  - git submodule update --init --recursive
   - pip install pipenv
   - pipenv install --dev --skip-lock
 before_script:
@@ -9,9 +22,3 @@ before_script:
   - pipenv run alembic upgrade head
 script:
   - python -m pytest
-services:
-  - postgresql
-env:
-  - FLASK_ENV=ci
-addons:
-  postgresql: "9.6"

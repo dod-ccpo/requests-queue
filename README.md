@@ -2,6 +2,19 @@
 
 ## Installation
 
+### Cloning
+This project contains git submodules. Here is an example clone command that will
+automatically initialize and update those modules:
+
+    git clone --recurse-submodules git@github.com:dod-ccpo/requests-queue.git
+
+If you have an existing clone that does not yet contain the submodules, you can
+set them up with the following command:
+
+    git submodule update --init --recursive
+
+### Setup
+
     script/setup
 
 The setup script installs pipenv, which is what this application uses to manage its dependences and virtualenv. Instead of the classic `requirements.txt` file, pipenv uses a Pipfile and Pipfile.lock, making it more similar to other modern package managers like yarn or mix.
