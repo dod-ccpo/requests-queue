@@ -61,6 +61,8 @@ class Requests(object):
         self.db_session.add(request)
         self.db_session.commit()
 
+        return request
+
     @tornado.gen.coroutine
     def update(self, request_id, request_delta):
         try:
