@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# script/cibuild: Run CI related checks and tests
+
+source "$(dirname "${0}")"/../script/include/global_header.inc.sh
+
+# Run lint/style checks and unit tests
+source ./script/test
