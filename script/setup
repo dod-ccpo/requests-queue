@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# If a command fails, exit the script
-set -e
+# script/setup: Set up application for the first time after cloning, or set it
+#               back to the initial first unused state.
 
-# Ensure we are in the app root directory (not the /script directory)
-cd "$(dirname "${0}")/.."
+source "$(dirname "${0}")"/../script/include/global_header.inc.sh
 
-# Install virtualenv
-pip install -q pipenv
+# Set database name
+DATABASE_NAME="requests_queue"
 
-# Install application dependencies
-script/bootstrap
+# Enable database resetting
+RESET_DB="true"
 
+# Run the shared setup script
+source ./script/include/run_setup
