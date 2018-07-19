@@ -91,15 +91,12 @@ class Requests(object):
 
     @classmethod
     def should_auto_approve(cls, request):
-        all_request_sections = [
-            "details_of_use",
-            "information_about_you",
-            "primary_poc",
-        ]
-        existing_request_sections = request.body.keys()
-        return request.status == "submitted" and all(
-            section in existing_request_sections for section in all_request_sections
-        )
+        try:
+            dollar_value = request.body["details_of_use"]["dollar_value"]
+        except KeyError:
+            return False
+
+        return dollar_value < 200000
 
     @classmethod
     def should_allow_submission(cls, request):

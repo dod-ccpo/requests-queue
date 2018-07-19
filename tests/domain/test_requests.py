@@ -22,7 +22,20 @@ def test_nonexistent_request_raises(requests):
 
 
 @pytest.mark.gen_test
-def test_auto_approve_200k_or_less(requests, db):
+def test_auto_approve_less_than_200k(requests, db):
+    created_request = RequestFactory.create()
+    db.add(created_request)
+    db.commit()
+
+    created_request.body = {"details_of_use": {"dollar_value": 199999}}
+
+    request = yield requests.submit(created_request)
+
+    assert request.status == 'approved'
+
+
+@pytest.mark.gen_test
+def test_dont_auto_approve_if_dollar_value_is_200k_or_above(requests, db):
     created_request = RequestFactory.create()
     db.add(created_request)
     db.commit()
@@ -31,4 +44,17 @@ def test_auto_approve_200k_or_less(requests, db):
 
     request = yield requests.submit(created_request)
 
-    assert request.status == 'approved'
+    assert request.status == 'submitted'
+
+
+@pytest.mark.gen_test
+def test_dont_auto_approve_if_no_dollar_value_specified(requests, db):
+    created_request = RequestFactory.create()
+    db.add(created_request)
+    db.commit()
+
+    created_request.body = {"details_of_use": {}}
+
+    request = yield requests.submit(created_request)
+
+    assert request.status == 'submitted'
