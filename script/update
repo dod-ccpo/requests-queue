@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# If a command fails, exit the script
-set -e
+# script/update: Update existing application
 
-# Ensure we are in the app root directory (not the /script directory)
-cd "$(dirname "${0}")/.."
+source "$(dirname "${0}")"/../script/include/global_header.inc.sh
 
-# Update dependencies
-script/bootstrap
+# Enable DB migration
+MIGRATE_DB="true"
 
-pipenv run alembic upgrade head
+# Run the shared update script
+source ./script/include/run_update
