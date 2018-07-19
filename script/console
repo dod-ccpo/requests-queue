@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# If a command fails, exit the script
-set -e
+# script/console:
 
-# Ensure we are in the app root directory (not the /script directory)
-cd "$(dirname "${0}")/.."
+source "$(dirname "${0}")"/../script/include/global_header.inc.sh
 
-pipenv run ipython -i ./ipython_setup.py
+run_command "ipython -i ./ipython_setup.py"
