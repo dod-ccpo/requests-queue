@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# script/dev_server: Launch a development environment application server in 
+#                    DEBUG mode in the background 
+
+source "$(dirname "${0}")"/../script/include/global_header.inc.sh
+
+# Make sure we default to the 'dev' environment
+if [ -z "${FLASK_ENV+is_set}" ]; then
+  FLASK_ENV="dev"
+fi
+
+# Run the shared dev_server script
+source ./script/include/run_dev_server "$*"
