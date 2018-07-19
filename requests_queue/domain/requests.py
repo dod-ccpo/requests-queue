@@ -86,8 +86,8 @@ class Requests(object):
         # since it doesn't track dictionary mutations by default.
         flag_modified(request, "body")
 
-        db_session.add(request)
-        db_session.commit()
+        self.db_session.add(request)
+        self.db_session.commit()
 
     @classmethod
     def should_auto_approve(cls, request):
