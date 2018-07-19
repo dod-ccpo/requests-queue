@@ -1,10 +1,14 @@
 #!/bin/bash
 
-# If a command fails, exit the script
-set -e
+# script/test: Run static code checks and unit tests
 
-# Ensure we are in the app root directory (not the /script directory)
-cd "$(dirname "${0}")/.."
+source "$(dirname "${0}")"/../script/include/global_header.inc.sh
 
-# Run unit tests
-pipenv run python -m pytest -s $*
+# Define all relevant python files and directories for this app
+PYTHON_FILES="./app.py ./requests_queue"
+
+# Enable Python testing
+RUN_PYTHON_TESTS="true"
+
+# Run the shared test script
+source ./script/include/run_test
