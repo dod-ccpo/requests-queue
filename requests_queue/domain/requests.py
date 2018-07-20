@@ -96,7 +96,7 @@ class Requests(object):
         except KeyError:
             return False
 
-        return dollar_value < 200000
+        return dollar_value < 1000000
 
     @classmethod
     def should_allow_submission(cls, request):
