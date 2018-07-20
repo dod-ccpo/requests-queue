@@ -7,4 +7,4 @@ class RequestSerializer(Schema):
     time_created = fields.DateTime()
     body = fields.Dict()
     status = fields.String()
-    action_requred_by = fields.String()
+    action_required_by = fields.String()
