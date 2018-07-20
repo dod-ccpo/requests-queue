@@ -29,4 +29,4 @@ class Request(Base):
             "pending_submission": "mission_owner",
             "submitted": "ccpo",
             "approved": "mission_owner",
-        }[self.status]
+        }.get(self.status)
