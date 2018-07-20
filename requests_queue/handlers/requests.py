@@ -1,4 +1,3 @@
-import tornado.gen
 from tornado.ioloop import IOLoop
 
 from requests_queue.handlers.base import BaseHandler

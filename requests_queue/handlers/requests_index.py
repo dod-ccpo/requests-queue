@@ -1,12 +1,4 @@
-from json import loads
-import tornado.gen
-from tornado.ioloop import IOLoop
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.orm.attributes import flag_modified
-from sqlalchemy import exists, and_
-
 from requests_queue.handlers.base import BaseHandler
-from requests_queue.models import Request, StatusEvent
 from requests_queue.serializers.request import RequestSerializer
 from requests_queue.domain.requests import Requests
 from .utils import parse_body

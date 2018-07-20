@@ -1,8 +1,6 @@
-import tornado.gen
 from tornado.ioloop import IOLoop
 
 from requests_queue.handlers.base import BaseHandler
-from requests_queue.models import Request, StatusEvent
 from requests_queue.domain.requests import Requests
 from requests_queue.domain.exceptions import NotFoundError
 
