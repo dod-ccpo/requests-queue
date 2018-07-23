@@ -9,6 +9,8 @@ from .utils import deep_merge
 
 
 class Requests(object):
+    AUTO_APPROVE_THRESHOLD = 1000000
+
     def __init__(self, db_session):
         self.db_session = db_session
 
@@ -61,6 +63,8 @@ class Requests(object):
         self.db_session.add(request)
         self.db_session.commit()
 
+        return request
+
     @tornado.gen.coroutine
     def update(self, request_id, request_delta):
         try:
@@ -84,20 +88,17 @@ class Requests(object):
         # since it doesn't track dictionary mutations by default.
         flag_modified(request, "body")
 
-        db_session.add(request)
-        db_session.commit()
+        self.db_session.add(request)
+        self.db_session.commit()
 
     @classmethod
     def should_auto_approve(cls, request):
-        all_request_sections = [
-            "details_of_use",
-            "information_about_you",
-            "primary_poc",
-        ]
-        existing_request_sections = request.body.keys()
-        return request.status == "submitted" and all(
-            section in existing_request_sections for section in all_request_sections
-        )
+        try:
+            dollar_value = request.body["details_of_use"]["dollar_value"]
+        except KeyError:
+            return False
+
+        return dollar_value < cls.AUTO_APPROVE_THRESHOLD
 
     @classmethod
     def should_allow_submission(cls, request):
