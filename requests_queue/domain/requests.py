@@ -9,6 +9,8 @@ from .utils import deep_merge
 
 
 class Requests(object):
+    AUTO_APPROVE_THRESHOLD = 1000000
+
     def __init__(self, db_session):
         self.db_session = db_session
 
@@ -96,7 +98,7 @@ class Requests(object):
         except KeyError:
             return False
 
-        return dollar_value < 1000000
+        return dollar_value < cls.AUTO_APPROVE_THRESHOLD
 
     @classmethod
     def should_allow_submission(cls, request):
